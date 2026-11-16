@@ -127,7 +127,11 @@ def build_tools() -> List[Dict[str, Any]]:                 # ✏️ Build 1, ste
         },
         {
             "name": "search_alternatives",
-            "description": "search for an alternatives flight, excluding the one currently booked for given pnr. Use this before telling a customer what their options are, only ask for the pnr and no other information never state the alternative flight from memory",
+            "description": (
+                "Find available replacement flights for the disrupted segment on the booking "
+                "identified by the PNR. Requires only the PNR. Use the returned options when "
+                "discussing rebooking; do not state alternatives from memory."
+            ),
             "input_schema": {
                 "type": "object",
                 "properties": {"pnr": {"type": "string"}},
@@ -143,7 +147,10 @@ def build_tools() -> List[Dict[str, Any]]:                 # ✏️ Build 1, ste
                 "what get_flight_status told you; fare_family, loyalty_tier and whether this "
                 "is overnight are looked up from the booking, not asked of you. Every "
                 "response carries a policy_row_id. Cite it if you reference this decision "
-                "again."
+                "again. If wait_minutes_for_alternative is known, provide it; omit it if "
+                "unknown, in which case care may be returned as conditional. When a specific "
+                "alternative is selected, provide its chosen_option_id so overnight care is "
+                "evaluated for that itinerary; without one, the earliest alternative is used."
             ),
             "input_schema": {
                 "type": "object",
