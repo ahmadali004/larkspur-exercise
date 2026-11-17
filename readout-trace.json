@@ -5,7 +5,7 @@
     "lookup_booking",
     "get_flight_status",
     "check_policy",
-    "fare_rules"
+    "search_alternatives"
   ],
   "saw_thinking": true,
   "used_format": false,
@@ -13,11 +13,11 @@
   "streamed": false,
   "deltas_seen": 0,
   "tokens": {
-    "input": 14212,
-    "output": 1119,
+    "input": 3978,
+    "output": 1341,
     "cache_read": 0,
-    "cache_write": 0
+    "cache_write": 11064
   },
-  "cache_hit_ratio": null,
-  "elapsed": 11.0
+  "cache_hit_ratio": 0.0,
+  "elapsed": 12.4
 }
