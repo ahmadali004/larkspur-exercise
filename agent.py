@@ -9,6 +9,7 @@ Where you edit:   grep -n '✏' agent.py   (six marks, one per place)
 Steps and gates:  https://anthropicpartnerbasecamp.bts.com/
 """
 from __future__ import annotations
+import re
 from typing import Any, Dict, List
 from support import (MODEL, SYSTEM_PROMPT, call_local, execute_tool, mcp_client,
                      new_session, next_available_day, record_tool_result,
@@ -17,8 +18,28 @@ from support import (MODEL, SYSTEM_PROMPT, call_local, execute_tool, mcp_client,
 MAX_TOOL_CALLS = 8  # Larkspur's own build capped the loop here; then a human takes over.
 
 TONE_ADDENDUM = ""                       # ✏️ Build 4, step 4.1, intelligence goal
-EXTRA_TOOLS: List[Dict[str, Any]] = []   # ✏️ Build 2, step 2.1: schemas for the tools you add
-LOCAL_TOOLS: Dict[str, Any] = {}         # ✏️ Build 2, step 2.1: the functions behind them
+EXTRA_TOOLS: List[Dict[str, Any]] = [
+    {"name": "fare_rules",
+     "description" : "Look up the wording around fare rules for a given section to inform a customer the reasons behind the answer they have been given on what they are owed following a disruption. What the customer is owed comes from check_policy and the request for this tool can be related to the sectiosn in the rules: 'Fare families', 'When we delay, cancel or divert your flight', or 'Care while you wait (per passenger)'.  Provide the wording of the section exactly and do not state any policy from memory",
+     "input_schema": {
+         "type": "object",
+            "properties": {"section": {"type": "string"}},
+            "required": ["section"],
+        }
+    }
+    ]
+def fare_rules(section: str) -> str:
+    text = open("data/americas/fare_rules_excerpt.md").read()
+    chunks = re.split(r"(?m)^### ", text)[1:]  # each chunk starts "N. Title\n<body>"
+    for chunk in chunks:
+        heading, body = chunk.split("\n", 1)
+        number, title = heading.split(".", 1)
+        if section.strip() == number.strip() or section.lower().strip() in title.lower():
+            return body.strip()
+    return "No matching section found."
+
+
+LOCAL_TOOLS: Dict[str, Any] = {"fare_rules": fare_rules}  # ✏️ Build 2, step 2.1: the functions behind them
 
 
 def text_of(response) -> str:
